@@ -45,6 +45,7 @@
   (should (equal '("spam" 123) (bencode-read-from-string "l4:spami123ee")))
   (should (equal '()           (bencode-read-from-string "le")))
   (should (equal ["spam" 123]
+
                  (let ((bencode-list-type 'vector))
                    (bencode-read-from-string "l4:spami123ee"))))
   (should (equal '(((()))) (bencode-read-from-string "lllleeee")))
@@ -104,6 +105,11 @@
   (should (equal (bencode-encode #s(hash-table)) "de"))
   (let ((obj '(42 "hi" ("nested" "list" (("a" . (("nested dict" . "xxx"))) ("b" . 2))))))
     (should (equal obj (bencode-read-from-string (bencode-encode obj))))))
+
+(ert-deftest bencode-read-file ()
+  "Test reading torrent."
+  (cl-loop for file in (file-expand-wildcards "*.torrent")
+           do (should (bencode-read-file file))))
 
 (provide 'bencode-tests)
 ;;; bencode-tests.el ends here

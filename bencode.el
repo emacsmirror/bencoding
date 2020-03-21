@@ -157,6 +157,14 @@ alist (default) or plist or hash-table according to
     (goto-char (point-min))
     (bencode-read)))
 
+(defun bencode-read-file (file)
+  "Read the Bencode object contained in FILE and return it."
+  (with-temp-buffer
+    (set-buffer-multibyte nil)
+    (insert-file-contents-literally file)
+    (goto-char (point-min))
+    (bencode-read)))
+
 (defun bencode-encode-integer (integer)
   "Encode INTEGER as a Bencode integer, return a unibyte string."
   (cl-assert (integerp integer))
