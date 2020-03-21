@@ -30,6 +30,7 @@
 
 (require 'cl-lib)
 (require 'map)                          ; `map-into'
+(require 'json)                         ; `json-alist-p'
 
 (defvar bencode-list-type 'list
   "Type to convert Bencode lists to.
@@ -155,6 +156,50 @@ alist (default) or plist or hash-table according to
     (insert string)
     (goto-char (point-min))
     (bencode-read)))
+
+(defun bencode-encode-integer (integer)
+  "Encode INTEGER as a Bencode integer, return a unibyte string."
+  (cl-assert (integerp integer))
+  (format "i%de" integer))
+
+(defun bencode-encode-byte-string (string)
+  "Encode STRING as a Bencode byte string, return a unibyte string."
+  (cl-assert (not (multibyte-string-p string)))
+  (format "%d:%s" (length string) string))
+
+(defun bencode-encode-list (list-or-vector)
+  "Encode LIST-OR-VECTOR as a Bencode list, return a unibyte string."
+  (format "l%se"
+          (mapconcat #'bencode-encode list-or-vector "")))
+
+(defun bencode-encode-dictionary (alist-or-hash-table)
+  "Encode ALIST-OR-HASH-TABLE as a Bencode dictionary.
+Return a unibyte string."
+  (let ((alist (pcase alist-or-hash-table
+                 ((and (pred hash-table-p) ht) (map-into ht 'list))
+                 (alist
+                  ;; Make sure we don't alter the list structure
+                  (copy-sequence alist)))))
+    (setq alist
+          (sort alist (pcase-lambda (`(,k1 . ,_)
+                                     `(,k2 . ,_))
+                        (string< k1 k2))))
+    (cl-loop for (k . v) in alist
+             concat (concat (bencode-encode k) (bencode-encode v)) into s
+             finally return (concat "d" s "e"))))
+
+(defun bencode-encode (object)
+  "Return a JSON representation of OBJECT as a unibyte string."
+  (pcase object
+    ((pred integerp) (bencode-encode-integer object))
+    ((pred stringp) (bencode-encode-byte-string object))
+    ((pred vectorp) (bencode-encode-list object))
+    ((pred hash-table-p) (bencode-encode-dictionary object))
+    ((pred listp) (if (json-alist-p object)
+                      ;; Note `json-alist-p' treats nil as alist, so to get a
+                      ;; empty bencode list, use []
+                      (bencode-encode-dictionary object)
+                    (bencode-encode-list object)))))
 
 (provide 'bencode)
 ;;; bencode.el ends here

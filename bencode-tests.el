@@ -59,5 +59,51 @@
   ;; wrong key order
   (should-error (bencode-read-from-string "d3:fooi1e3:bari2ee") :type 'bencode-error))
 
+(ert-deftest bencode-encode-integer ()
+  "Test encoding integers."
+  (should (equal "i42e" (bencode-encode-integer 42)))
+  (should (equal "i0e" (bencode-encode-integer 0)))
+  (should (equal "i-42e" (bencode-encode-integer -42)))
+  ;; `should-error' doesn't catch error of `cl-assert', not sure why, and now
+  ;; I'm sure I don't really understand `cl-assert' such as its correct use
+  ;; (should-error (bencode-encode-integer 1.0) :type 'cl-assertion-failed)
+  )
+
+(ert-deftest bencode-encode-byte-string ()
+  "Test writing Bencode byte strings."
+  (should (equal (bencode-encode-byte-string "spam") "4:spam"))
+  (should (equal (bencode-encode-byte-string "") "0:")))
+
+(ert-deftest bencode-encode-list ()
+  "Test writing Bencode lists."
+  (should (equal (bencode-encode-list []) "le"))
+  (should (equal (bencode-encode-list ["spam" 42]) "l4:spami42ee"))
+  (should (equal (bencode-encode-list '("spam" 42)) "l4:spami42ee")))
+
+(ert-deftest bencode-encode-dictionary ()
+  "Test writing Bencode dictionaries."
+  (should (equal (bencode-encode-dictionary '()) "de"))
+  (should (equal (bencode-encode-dictionary '(("foo" . 1) ("bar" . 2)))
+                 "d3:bari2e3:fooi1ee"))
+  (let* ((alist (list (cons "foo" 1)    
+                      (cons "bar" 2)))
+         (copy (copy-sequence alist)))
+    (bencode-encode-dictionary alist)
+    (should (equal alist copy)))        ; free of side-effects check
+  (should (equal (bencode-encode-dictionary
+                  #s(hash-table test equal data ("foo" 1 "bar" 2)))
+                 "d3:bari2e3:fooi1ee")))
+
+(ert-deftest bencode-encode ()
+  "Test encoding."
+  (should (equal (bencode-encode 42) "i42e"))
+  (should (equal (bencode-encode "hi") "2:hi"))
+  (should (equal (bencode-encode [42 "hi"]) "li42e2:hie"))
+  (should (equal (bencode-encode ()) "de"))
+  (should (equal (bencode-encode []) "le"))
+  (should (equal (bencode-encode #s(hash-table)) "de"))
+  (let ((obj '(42 "hi" ("nested" "list" (("a" . (("nested dict" . "xxx"))) ("b" . 2))))))
+    (should (equal obj (bencode-read-from-string (bencode-encode obj))))))
+
 (provide 'bencode-tests)
 ;;; bencode-tests.el ends here
