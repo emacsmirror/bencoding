@@ -36,7 +36,7 @@ Read and return the Bencode object at point.
 
 Read and return the Bencode object in STRING.
 
-### `(bencode-read-from-string FILE)`
+### `(bencode-read-from-file FILE)`
 
 Read and return the Bencode object in FILE.
 
