@@ -60,6 +60,7 @@ this around your call to `bencode-read' instead of `setq'ing it.")
 
 (defun bencode-read-bytes (amt)
   "Read AMT bytes."
+  (cl-assert (>= amt 0))
   (if (> amt (- (point-max) (point)))
       (signal 'bencode-end-of-file nil)
     (let ((op (point)))
@@ -70,7 +71,7 @@ this around your call to `bencode-read' instead of `setq'ing it.")
   "Read the Bencode integer following point, return an integer."
   (cond
    ((looking-at
-     (rx (or "0" (and (in "1-9") (* (in "0-9"))))))
+     (rx (or "0" (and (opt "-") (in "1-9") (* (in "0-9"))))))
     (goto-char (match-end 0))
     (string-to-number (match-string 0)))
    (t (signal 'bencode-error (list "Not a Bencode integer at point")))))

@@ -30,6 +30,7 @@
   "Test reading Bencode integers."
   (should (zerop (bencode-read-from-string "i0e")))
   (should (= (bencode-read-from-string "i123e") 123))
+  (should (= (bencode-read-from-string "i-123e") -123))
   (should-error (bencode-read-from-string "i01e") :type 'bencode-error)
   (should-error (bencode-read-from-string "i123") :type 'bencode-end-of-file))
 
