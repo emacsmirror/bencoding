@@ -22,6 +22,9 @@ jobs:
     - name: Byte compile
       run: |
         emacs -Q --batch -L . --eval "(setq byte-compile-error-on-warn t)" -f batch-byte-compile *.el
+    - name: Download a torrent file for testing
+      run: |
+        curl --silent --remote-name --retry 3 http://releases.ubuntu.com/18.04/ubuntu-18.04.4-desktop-amd64.iso.torrent
     - name: Run tests
       run: |
         emacs -Q --batch -L . -l *-tests.el -f ert-run-tests-batch-and-exit
