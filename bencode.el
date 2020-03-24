@@ -124,7 +124,7 @@ this around your call to `bencode-read' instead of `setq'ing it.")
   "Read and return the Bencode object at point.
 Advances point just past Bencode object.
 
-Bencode integer is mappped to Emacs Lisp integer.  Bencode byte
+Bencode integer is mapped to Emacs Lisp integer.  Bencode byte
 string is mapped to Emacs Lisp unibyte string.  Bencode list is
 mapped to Emacs Lisp list (default) or vector according to
 `bencode-list-type'.  Bencode dictionary is mapped to Emacs Lisp
