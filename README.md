@@ -1,27 +1,27 @@
-# BitTorrent Bencode library for Emacs Lisp
+# BitTorrent Bencoding library for Emacs Lisp
 
-`bencode.el` is a [Bencode](https://en.wikipedia.org/wiki/Bencode) library for
+`bencoding.el` is a [Bencode](https://en.wikipedia.org/wiki/Bencode) library for
 Emacs Lisp. It let you read and write Bencode.
 
 ## Usage
 
-To decode Bencode, use `bencode-read` or `bencode-read-from-string`, e.g.,
+To decode Bencode, use `bencoding-read` or `bencoding-read-from-string`, e.g.,
 
 ``` emacs-lisp
-(bencode-read-from-string "d5:applei1e6:bananai2ee")
+(bencoding-read-from-string "d5:applei1e6:bananai2ee")
 ;; => (("apple" . 1) ("banana" . 2))
 ```
 
-To encode Bencode, use `bencode-encode`, e.g.,
+To encode Bencode, use `bencoding-encode`, e.g.,
 
 ``` emacs-lisp
-(bencode-encode '(("apple" . 1) ("banana" . 2)))
+(bencoding-encode '(("apple" . 1) ("banana" . 2)))
 ;; => "d5:applei1e6:bananai2ee"
 ```
 
 ## API
 
-### `(bencode-read)`
+### `(bencoding-read)`
 
 Read and return the Bencode object at point.
 
@@ -29,19 +29,19 @@ Read and return the Bencode object at point.
 |--------------|--------------------------------------------------------------------------------------|
 | integer      | integer                                                                              |
 | byte string  | unibyte string                                                                       |
-| list         | list, if you need vector, let-binding `bencode-list-type` to `vector`                |
-| dictionary   | alist, if you need hash table, let-binding `bencode-dictionary-type` to `hash-table` |
+| list         | list, if you need vector, let-binding `bencoding-list-type` to `vector`                |
+| dictionary   | alist, if you need hash table, let-binding `bencoding-dictionary-type` to `hash-table` |
 
-### `(bencode-read-from-string STRING)`
+### `(bencoding-read-from-string STRING)`
 
 Read and return the Bencode object in STRING.
 
-### `(bencode-read-from-file FILE)`
+### `(bencoding-read-from-file FILE)`
 
 Read and return the Bencode object in FILE.
 
 
-### `(bencode-encode OBJECT)`
+### `(bencoding-encode OBJECT)`
 
 Encode OBJECT.
 

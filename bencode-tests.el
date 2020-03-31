@@ -1,4 +1,4 @@
-;;; bencode-tests.el --- Tests                       -*- lexical-binding: t; -*-
+;;; bencoding-tests.el --- Tests                       -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2020  Xu Chunyang
 
@@ -19,97 +19,97 @@
 
 ;;; Commentary:
 
-;; Tests for bencode.el
+;; Tests for bencoding.el
 
 ;;; Code:
 
-(require 'bencode)
+(require 'bencoding)
 (require 'ert)
 
-(ert-deftest bencode-read-integer ()
-  "Test reading Bencode integers."
-  (should (zerop (bencode-read-from-string "i0e")))
-  (should (= (bencode-read-from-string "i123e") 123))
-  (should (= (bencode-read-from-string "i-123e") -123))
-  (should-error (bencode-read-from-string "i01e") :type 'bencode-error)
-  (should-error (bencode-read-from-string "i123") :type 'bencode-end-of-file))
+(ert-deftest bencoding-read-integer ()
+  "Test reading Bencoding integers."
+  (should (zerop (bencoding-read-from-string "i0e")))
+  (should (= (bencoding-read-from-string "i123e") 123))
+  (should (= (bencoding-read-from-string "i-123e") -123))
+  (should-error (bencoding-read-from-string "i01e") :type 'bencoding-error)
+  (should-error (bencoding-read-from-string "i123") :type 'bencoding-end-of-file))
 
-(ert-deftest bencode-read-byte-string ()
-  "Test reading Bencode byte strings."
-  (should (equal "spam" (bencode-read-from-string "4:spam")))
-  (should (equal "" (bencode-read-from-string "0:")))
-  (should-error (bencode-read-from-string "4:abc") :type 'bencode-end-of-file))
+(ert-deftest bencoding-read-byte-string ()
+  "Test reading Bencoding byte strings."
+  (should (equal "spam" (bencoding-read-from-string "4:spam")))
+  (should (equal "" (bencoding-read-from-string "0:")))
+  (should-error (bencoding-read-from-string "4:abc") :type 'bencoding-end-of-file))
 
-(ert-deftest bencode-read-byte-string ()
-  "Test reading Bencode lists."
-  (should (equal '("spam" 123) (bencode-read-from-string "l4:spami123ee")))
-  (should (equal '()           (bencode-read-from-string "le")))
+(ert-deftest bencoding-read-byte-string ()
+  "Test reading Bencoding lists."
+  (should (equal '("spam" 123) (bencoding-read-from-string "l4:spami123ee")))
+  (should (equal '()           (bencoding-read-from-string "le")))
   (should (equal ["spam" 123]
 
-                 (let ((bencode-list-type 'vector))
-                   (bencode-read-from-string "l4:spami123ee"))))
-  (should (equal '(((()))) (bencode-read-from-string "lllleeee")))
-  (should (equal '(1(2(3(4)))) (bencode-read-from-string "li1eli2eli3eli4eeeee"))))
+                 (let ((bencoding-list-type 'vector))
+                   (bencoding-read-from-string "l4:spami123ee"))))
+  (should (equal '(((()))) (bencoding-read-from-string "lllleeee")))
+  (should (equal '(1(2(3(4)))) (bencoding-read-from-string "li1eli2eli3eli4eeeee"))))
 
-(ert-deftest bencode-read-dictionary ()
-  "Test reading Bencode dictionaries."
-  (should (equal '() (bencode-read-from-string "de")))
-  (should (equal '(("bar" . "spam") ("foo" . 42)) (bencode-read-from-string "d3:bar4:spam3:fooi42ee")))
+(ert-deftest bencoding-read-dictionary ()
+  "Test reading Bencoding dictionaries."
+  (should (equal '() (bencoding-read-from-string "de")))
+  (should (equal '(("bar" . "spam") ("foo" . 42)) (bencoding-read-from-string "d3:bar4:spam3:fooi42ee")))
   ;; wrong key type
-  (should-error (bencode-read-from-string "di1ei2ee") :type 'bencode-error)
+  (should-error (bencoding-read-from-string "di1ei2ee") :type 'bencoding-error)
   ;; wrong key order
-  (should-error (bencode-read-from-string "d3:fooi1e3:bari2ee") :type 'bencode-error))
+  (should-error (bencoding-read-from-string "d3:fooi1e3:bari2ee") :type 'bencoding-error))
 
-(ert-deftest bencode-encode-integer ()
+(ert-deftest bencoding-encode-integer ()
   "Test encoding integers."
-  (should (equal "i42e" (bencode-encode-integer 42)))
-  (should (equal "i0e" (bencode-encode-integer 0)))
-  (should (equal "i-42e" (bencode-encode-integer -42)))
+  (should (equal "i42e" (bencoding-encode-integer 42)))
+  (should (equal "i0e" (bencoding-encode-integer 0)))
+  (should (equal "i-42e" (bencoding-encode-integer -42)))
   ;; `should-error' doesn't catch error of `cl-assert', not sure why, and now
   ;; I'm sure I don't really understand `cl-assert' such as its correct use
-  ;; (should-error (bencode-encode-integer 1.0) :type 'cl-assertion-failed)
+  ;; (should-error (bencoding-encode-integer 1.0) :type 'cl-assertion-failed)
   )
 
-(ert-deftest bencode-encode-byte-string ()
-  "Test writing Bencode byte strings."
-  (should (equal (bencode-encode-byte-string "spam") "4:spam"))
-  (should (equal (bencode-encode-byte-string "") "0:")))
+(ert-deftest bencoding-encode-byte-string ()
+  "Test writing Bencoding byte strings."
+  (should (equal (bencoding-encode-byte-string "spam") "4:spam"))
+  (should (equal (bencoding-encode-byte-string "") "0:")))
 
-(ert-deftest bencode-encode-list ()
-  "Test writing Bencode lists."
-  (should (equal (bencode-encode-list []) "le"))
-  (should (equal (bencode-encode-list ["spam" 42]) "l4:spami42ee"))
-  (should (equal (bencode-encode-list '("spam" 42)) "l4:spami42ee")))
+(ert-deftest bencoding-encode-list ()
+  "Test writing Bencoding lists."
+  (should (equal (bencoding-encode-list []) "le"))
+  (should (equal (bencoding-encode-list ["spam" 42]) "l4:spami42ee"))
+  (should (equal (bencoding-encode-list '("spam" 42)) "l4:spami42ee")))
 
-(ert-deftest bencode-encode-dictionary ()
-  "Test writing Bencode dictionaries."
-  (should (equal (bencode-encode-dictionary '()) "de"))
-  (should (equal (bencode-encode-dictionary '(("foo" . 1) ("bar" . 2)))
+(ert-deftest bencoding-encode-dictionary ()
+  "Test writing Bencoding dictionaries."
+  (should (equal (bencoding-encode-dictionary '()) "de"))
+  (should (equal (bencoding-encode-dictionary '(("foo" . 1) ("bar" . 2)))
                  "d3:bari2e3:fooi1ee"))
   (let* ((alist (list (cons "foo" 1)    
                       (cons "bar" 2)))
          (copy (copy-sequence alist)))
-    (bencode-encode-dictionary alist)
+    (bencoding-encode-dictionary alist)
     (should (equal alist copy)))        ; free of side-effects check
-  (should (equal (bencode-encode-dictionary
+  (should (equal (bencoding-encode-dictionary
                   #s(hash-table test equal data ("foo" 1 "bar" 2)))
                  "d3:bari2e3:fooi1ee")))
 
-(ert-deftest bencode-encode ()
+(ert-deftest bencoding-encode ()
   "Test encoding."
-  (should (equal (bencode-encode 42) "i42e"))
-  (should (equal (bencode-encode "hi") "2:hi"))
-  (should (equal (bencode-encode [42 "hi"]) "li42e2:hie"))
-  (should (equal (bencode-encode ()) "de"))
-  (should (equal (bencode-encode []) "le"))
-  (should (equal (bencode-encode #s(hash-table)) "de"))
+  (should (equal (bencoding-encode 42) "i42e"))
+  (should (equal (bencoding-encode "hi") "2:hi"))
+  (should (equal (bencoding-encode [42 "hi"]) "li42e2:hie"))
+  (should (equal (bencoding-encode ()) "de"))
+  (should (equal (bencoding-encode []) "le"))
+  (should (equal (bencoding-encode #s(hash-table)) "de"))
   (let ((obj '(42 "hi" ("nested" "list" (("a" . (("nested dict" . "xxx"))) ("b" . 2))))))
-    (should (equal obj (bencode-read-from-string (bencode-encode obj))))))
+    (should (equal obj (bencoding-read-from-string (bencoding-encode obj))))))
 
-(ert-deftest bencode-read-file ()
+(ert-deftest bencoding-read-file ()
   "Test reading torrent."
   (cl-loop for file in (file-expand-wildcards "*.torrent")
-           do (should (bencode-read-file file))))
+           do (should (bencoding-read-file file))))
 
-(provide 'bencode-tests)
-;;; bencode-tests.el ends here
+(provide 'bencoding-tests)
+;;; bencoding-tests.el ends here
