@@ -1,4 +1,5 @@
 # BitTorrent Bencoding library for Emacs Lisp
+[![Melpa](https://melpa.org/packages/bencoding-badge.svg)](https://melpa.org/#/bencoding)
 
 `bencoding.el` is a [Bencode](https://en.wikipedia.org/wiki/Bencode) library for
 Emacs Lisp. It let you read and write Bencode.
