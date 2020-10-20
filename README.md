@@ -57,4 +57,4 @@ Encode OBJECT.
 
 ## Requires
 
-- Emacs 25.1
+- Emacs 25.1 or later
